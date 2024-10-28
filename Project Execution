@@ -1,0 +1,70 @@
+# Here, I show a step by step process for how the project was executed.
+
+**Task1** - Launching a Virtual machine and deploying the vulnerable application
+In this task, I set up the infrastructure to demonstrate an application vulnerability to Cymbal Bank's CTO. I deploy a virtual machine, obtain the application code and introduce a vulnerability,
+that will be detected by Web Security Scanner. This application is a simple form that receives a user's input and outputs it without any changes.
+
+1. On the Google Cloud Console title bar, I clicked Activate Cloud Shell (Activate Cloud Shell icon). When prompted, I clicked Continue.
+2. I created a static IP address that will be used for scanning a vulnerable web application with code:
+# gcloud compute addresses create xss-test-ip-address --region=lab region
+3. I run the following command to output the static IP address I just generated:
+# gcloud compute addresses describe xss-test-ip-address \ --region=lab region --format="value(address)"
+IP address: 34.42.112.203
+4. I run the command below to create a VM instance to run the vulnerable application:
+# gcloud compute instances create xss-test-vm-instance \
+--address=xss-test-ip-address --no-service-account \
+--no-scopes --machine-type=e2-micro --zone=lab zone \
+--metadata=startup-script='apt-get update; apt-get install -y python3-flask'
+5. Then I open a firewall rule for the Web Security Scanner to access the vulnerable application. Note the source ranges from which Web Security Scanner scans applications:
+# gcloud compute firewall-rules create enable-wss-scan \
+--direction=INGRESS --priority=1000 \
+--network=default --action=ALLOW \
+--rules=tcp:8080 --source-ranges=0.0.0.0/0
+Next,in the google cloud console, I opened the navigation menu and selected Compute Engine > VM Instances. Then I clicked on the SSH button next to my instance.
+6. Then, I run the following command to download and extract the vulnerable web application files:
+# gsutil cp gs://cloud-training/GCPSEC-ScannerAppEngine/flask_code.tar  . && tar xvf flask_code.tar
+7. Then, I run the command below to deploy the application: 
+# python3 app.py
+8. I then open the URL below in a new browser tab, the IP address is the static IP address i noted:
+# http://34.42.112.203:8080
+9. A Cymbal Bank corporate banking portal with a web form appeared. In the web form, I entered the following string and pressed the POST button:
+# <script>alert('This is an XSS Injection')</script>
+An alert window pops up, that shows a common vulnerability in web applications: a cross-site scripting vulnerability. Cross-site scripting (XSS) is a vulnerability that enables attackers to run 
+malicious scripts in users' browsers in the context of your application. Your browser interprets a string as a legitimate Javascript and executes it.
+
+
+
+**Task2** - Scan the application with Web Security Scanner
+After launching the vulnerable application in task 1, it's time to demonstrate Web Security Scanner's abilities to the CTO. 
+In this task, I configured and set up a scan of the application to find security vulnerabilities.
+1. On the google Cloud console, I Open the Navigation menu and select APIs & Services > Library.
+
+2. In Search for APIs and service, I type Web Security Scanner and press Enter. Select Web Security Scanner API.
+
+3. I clicked Enable to enable the Web Security Scanner API.
+
+4. Next, I open the Navigation menu and select Security > Web Security Scanner, and Click + New Scan.
+
+5. In the Starting URLs section, the Starting URL 1 field was pre-populated with my static IP address:34.42.112.203.
+
+6. I added the port number 8080, so that the Starting URL looks like the following: http://34.42.112.203:8080
+7. Verify the Authentication is still set to None and that Schedule is set to Never. Clicked Save to create the scan. Clicked run to start scan
+8. Next thing I did was return to the SSH window, and In the SSH Window, I saw logs generated with different HTTP codes.
+9. After the scan is done running, the Results tab indicated the cross-site vulnerabilities. This shows that, the Web Security Scanner was able to scan all starting URLs,
+and detect the XSS vulnerabilities in Cymbal Bank's application
+
+**Task3** - Remediating the vulnerability
+In this section, I remediate the vulnerability and run the application scan again.
+1. On the SSH window that's connected to my VM instance, I stopped the running application by pressing CTRL + C.
+2. I edited the app.py file using the nano editor by running the following command: nano app.py
+3. I located the two lines that set the output string, modified the code to look this way:
+@app.route('/output')
+def output():
+  output_string = "".join([html_escape_table.get(c, c) for c in input_string])
+  # output_string = input_string
+  return flask.render_template("output.html", output=output_string)
+4. I typed CTRL+X > Y > Enter to save your changes. I re-run the application with code: python3 app.py
+5. On the Web Security Scanner page, I clicked on Run. I started seeing the logs on the SSH window
+6. After a while,  results yielded no more XSS vulnerabilities on the web scanner page on the google cloud console
+Vulnerability successfully remediated!!!
+
