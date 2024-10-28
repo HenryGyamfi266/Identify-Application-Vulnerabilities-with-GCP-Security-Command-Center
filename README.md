@@ -14,4 +14,4 @@ In this Project, I perform the following tasks:
 Cymbal Bank, a U.S. retail bank with over 2,000 branches nationwide, provides comprehensive debit and credit services on a secure payments platform.
 Founded as Troxler in 1920, it was acquired by Cymbal Group in 1975 and has since focused on modernizing its customer experience both in branches and digitally, 
 with an app introduced in 2014. With 42,000 employees, the bank reported $24 billion in revenue in 2019. Now, Cymbal Bank aims to develop a new banking application for corporate clients using Google Cloud technology. To ensure security, the CTO has tasked a Cloud Security Engineer with demonstrating Google Cloud’s Security Command Center to identify and mitigate application vulnerabilities.
-**As a cloud security engineer, I will identify and remediate application vulnerabilities to ensure Cymbal bank's applications are secure from attack**
+**As a cloud security engineer, I will identify and remediate application vulnerabilities to ensure Cymbal bank's applications are secured from cyber attacks**
