@@ -5,9 +5,9 @@ This project provided a comprehensive understanding of GCP's web security tools,
 
 # Objectives
 In this Project, I perform the following tasks:
-**Launch a vulnerable Python Flask application on a Compute Engine instance**
-**Use Web Security Scanner to scan the application and find vulnerabilities**
-**Fix the application vulnerability**
+**Launch a vulnerable Python Flask application on a Compute Engine instance**,
+**Use Web Security Scanner to scan the application and find vulnerabilities**,
+**Fix the application vulnerability**,
 **Scan the application again and verify vulnerabilities no longer exist**
 
 # Scenario
